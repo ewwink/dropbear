@@ -38,6 +38,14 @@ function download_url() {
 	curl -s -S -O -L -m 300 --connect-timeout 60 "$TARGET_URL"
 }
 
+pushd ${BUNDLE_DIR} > /dev/null
+
+if [ -n "`find . -type f -atime +30`" ]
+then
+	echo "-----> Pruning Unused Cached Bundles"
+	find . -type f -atime +30 -delete | indent
+fi
+
 echo "-----> Fetching Manifest"
 echo ${MANIFEST_URL} | indent
 download_url ${MANIFEST_URL}
