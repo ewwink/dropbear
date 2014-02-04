@@ -64,25 +64,21 @@ mkdir -p ${BUILD_DIR}/vendor/dropbear
 tar xzf ${DROPBEAR_FILE} -C ${BUILD_DIR}/vendor/dropbear
 export PATH="${PATH}:${BUILD_DIR}/vendor/dropbear/sbin"
 
-echo "====> copying id_dsa.pub <==="
-mkdir -p ${BUILD_DIR}/.ssh
-cp $LP_DIR/ssh/id_dsa.pub ${BUILD_DIR}/.ssh/id_dsa.pub
-
-
 echo "-----> Installing boot script"
 cd $BUILD_DIR
 cat >>boot.sh <<EOF
 #!/usr/bin/env bash
 
-echo "Booting dropbear"
+
+echo "===> copying id_dsa.pub and Booting dropbear <==="
 
 # Override config files if provided in app.
-#if [ -d /app/.ssh ]; then
-#	mkdir -p /app/.ssh
-#	if [ -r /app/.ssh/id_dsa.pub ]; then
-#		cp -f /app/conf/php-fpm.conf /app/vendor/php/etc/php-fpm.conf
-#	fi
-#fi
+if [ -d /app/.ssh ]; then
+	mkdir -p /app/.ssh
+	if [ -r /app/.ssh/id_dsa.pub ]; then
+		cp -f /app/ssh/id_dsa.pub /app/.ssh/id_dsa.pub
+	fi
+fi
 
 
 /app/vendor/dropbear/sbin/dropbear -p 80 -r /app/vendor/dropbear/rsa.key -d /app/vendor/dropbear/dss.key
