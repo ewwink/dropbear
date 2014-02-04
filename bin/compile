@@ -53,7 +53,7 @@ then
 		echo ${DROPBEAR_URL} | indent
 		download_url ${DROPBEAR_URL}
 	else
-		echo "Using cached Nginx v${NGINX_VERSION}" | indent
+		echo "Using cached Dropbear" | indent
 	fi
 else
 	# fetch
