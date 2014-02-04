@@ -7,7 +7,7 @@ D_URL="http://lyric.net23.net/nginx-php-fpm/"
 
 MANIFEST_FILE="dropbear.md5sum"
 MANIFEST_URL=${D_URL}${MANIFEST_FILE}
-DROPBEAR_FILE="dropbear.tgz.tgz"
+DROPBEAR_FILE="dropbear.tgz"
 DROPBEAR_URL=${D_URL}${DROPBEAR_FILE}
 
 BUILD_DIR=$1
