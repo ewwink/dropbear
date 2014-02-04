@@ -94,7 +94,7 @@ echo "Port"
 
 echo ${PORT}
 
-exec /app/vendor/dropbear/sbin/dropbear -F -E -a -p 49989 -r /app/vendor/dropbear/rsa.key -d /app/vendor/dropbear/dss.key
+exec /app/vendor/dropbear/sbin/dropbear -F -E -a -p ${PORT} -r /app/vendor/dropbear/rsa.key -d /app/vendor/dropbear/dss.key
 EOF
 chmod +x boot.sh
 
