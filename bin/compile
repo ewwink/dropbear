@@ -90,13 +90,11 @@ if [ -d /app/.ssh ]; then
 	fi
 fi
 
-echo $PORT
+echo "Port"
 
-TESTPORT=${PORT}
+echo ${PORT}
 
-echo $TESTPORT
-
-/app/vendor/dropbear/sbin/dropbear -E -a -p $TESTPORT -r /app/vendor/dropbear/rsa.key -d /app/vendor/dropbear/dss.key
+exec /app/vendor/dropbear/sbin/dropbear -E -a -p ${PORT} -r /app/vendor/dropbear/rsa.key -d /app/vendor/dropbear/dss.key
 EOF
 chmod +x boot.sh
 
