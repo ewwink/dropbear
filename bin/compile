@@ -81,7 +81,7 @@ if [ -d /app/.ssh ]; then
 fi
 
 
-/app/vendor/dropbear/sbin/dropbear -p 80 -r /app/vendor/dropbear/rsa.key -d /app/vendor/dropbear/dss.key
+/app/vendor/dropbear/sbin/dropbear -p $PORT -r /app/vendor/dropbear/rsa.key -d /app/vendor/dropbear/dss.key
 EOF
 chmod +x boot.sh
 
