@@ -1,0 +1,92 @@
+#!/bin/bash
+
+set -e
+set -o pipefail
+
+D_URL="http://lyric.net23.net/nginx-php-fpm/"
+
+MANIFEST_FILE="dropbear.md5sum
+MANIFEST_URL=${D_URL}${MANIFEST_FILE}
+DROPBEAR_FILE="dropbear.tgz.tgz"
+DROPBEAR_URL=${D_URL}${DROPBEAR_FILE}
+
+BUILD_DIR=$1
+LP_DIR=`cd $(dirname $0); cd ..; pwd`
+
+mkdir -p $BUILD_DIR
+
+function indent() {
+	c='s/^/       /'
+	case $(uname) in
+		Darwin) sed -l "$c";;
+		*)      sed -u "$c";;
+	esac
+}
+
+function check_md5() {
+	SUMS_FILE="${BUNDLE_DIR}/${MANIFEST_FILE}"
+	TARGET="$1"
+	SUM=`cat "${SUMS_FILE}" | grep "${TARGET}" | cut -d ' ' -f 1`
+	OUTPUT=`md5sum ${BUNDLE_DIR}/${TARGET} | cut -d ' ' -f 1`
+	! [ "$SUM" = "$OUTPUT" ]
+}
+
+function download_url() {
+	TARGET_URL="$1"
+	curl -s -S -O -L -m 300 --connect-timeout 60 "$TARGET_URL"
+}
+
+echo "-----> Fetching Manifest"
+echo ${MANIFEST_URL} | indent
+download_url ${MANIFEST_URL}
+
+# Nginx
+echo "-----> Installing Dropbear"
+if [ -f "${DROPBEAR_FILE}" ]
+then
+	# check manifest
+	if check_md5 "${DROPBEAR_FILE}"
+	then
+		echo "Bundling Dropbear" | indent
+		echo ${DROPBEAR_URL} | indent
+		download_url ${DROPBEAR_URL}
+	else
+		echo "Using cached Nginx v${NGINX_VERSION}" | indent
+	fi
+else
+	# fetch
+	echo "Bundling Dropbear" | indent
+	echo ${DROPBEAR_URL} | indent
+	download_url ${DROPBEAR_URL}
+fi
+
+mkdir -p ${BUILD_DIR}/vendor/dropbear
+tar xzf ${DROPBEAR_FILE} -C ${BUILD_DIR}/vendor/dropbear
+export PATH="${PATH}:${BUILD_DIR}/vendor/dropbear/sbin"
+
+echo "====> copying id_dsa.pub <==="
+mkdir -p ${BUILD_DIR}/.ssh
+cp $LP_DIR/ssh/id_dsa.pub ${BUILD_DIR}/.ssh/id_dsa.pub
+
+
+echo "-----> Installing boot script"
+cd $BUILD_DIR
+cat >>boot.sh <<EOF
+#!/usr/bin/env bash
+
+echo "Booting dropbear"
+
+# Override config files if provided in app.
+#if [ -d /app/.ssh ]; then
+#	mkdir -p /app/.ssh
+#	if [ -r /app/.ssh/id_dsa.pub ]; then
+#		cp -f /app/conf/php-fpm.conf /app/vendor/php/etc/php-fpm.conf
+#	fi
+#fi
+
+
+/app/vendor/dropbear/sbin/dropbear -p 80 -r /app/vendor/dropbear/rsa.key -d /app/vendor/dropbear/dss.key
+EOF
+chmod +x boot.sh
+
+echo "-----> Done with compile"
