@@ -11,6 +11,8 @@ DROPBEAR_FILE="dropbear.tgz"
 DROPBEAR_URL=${D_URL}${DROPBEAR_FILE}
 
 BUILD_DIR=$1
+CACHE_DIR=$2
+BUNDLE_DIR="${CACHE_DIR}/bundles"
 LP_DIR=`cd $(dirname $0); cd ..; pwd`
 
 mkdir -p $BUILD_DIR
