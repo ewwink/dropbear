@@ -15,7 +15,7 @@ CACHE_DIR=$2
 BUNDLE_DIR="${CACHE_DIR}/bundles"
 LP_DIR=`cd $(dirname $0); cd ..; pwd`
 
-mkdir -p $BUILD_DIR
+mkdir -p $BUILD_DIR $CACHE_DIR ${BUNDLE_DIR}
 
 function indent() {
 	c='s/^/       /'
